@@ -1,8 +1,10 @@
-import { createContext, PropsWithChildren, useContext, useState } from 'react'
+import { createContext, PropsWithChildren, useContext, useRef, useState } from 'react'
 import { User } from '@/libs/types/User'
+import { GoogleAuthProvider } from '@firebase/auth'
 
 type AuthContextType = {
   user: User | null
+  authProvider: GoogleAuthProvider
   isLogin: boolean
   login: (user: User) => void
   logout: () => void
@@ -11,6 +13,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 const AuthContextProvider = ({ children }: PropsWithChildren) => {
+  const authProvider = useRef(new GoogleAuthProvider())
   const [user, setUser] = useState<User | null>(null)
   const [isLogin, setIsLogin] = useState(false)
   const login = (loginUser: User) => {
@@ -23,7 +26,11 @@ const AuthContextProvider = ({ children }: PropsWithChildren) => {
     setIsLogin(false)
   }
 
-  return <AuthContext.Provider value={{ user, isLogin, login, logout }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, isLogin, authProvider: authProvider.current, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 const useAuthContext = () => {
