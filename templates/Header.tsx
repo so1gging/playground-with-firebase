@@ -9,9 +9,15 @@ export default function Header() {
     context?.login({ name: user.displayName ?? 'no named', email: user.email ?? 'no email', loginTime: new Date() })
   }
 
+  const handleLogout = () => {
+    context?.logout()
+  }
+
   return (
     <>
-      <button onClick={handleLogin}>로그인</button>
+      <button onClick={context?.isLogin ? handleLogout : handleLogin}>
+        {context?.isLogin ? '로그아웃' : '로그인'}
+      </button>
     </>
   )
 }
